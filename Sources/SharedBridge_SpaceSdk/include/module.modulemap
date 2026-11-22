@@ -1,0 +1,5 @@
+module "SharedBridge_SpaceSdk" {
+    umbrella "."
+    export *
+    link "SpaceSdk"
+}
