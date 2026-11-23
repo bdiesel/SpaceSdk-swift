@@ -7,7 +7,7 @@ https://github.com/bdiesel/kmp-spm — do not edit by hand.
 ## Install
 
 Xcode: **File ▸ Add Package Dependencies…** → `https://github.com/bdiesel/SpaceSdk-swift`
-→ version `0.1.0` → product **SpaceSdkLibrary**. Requires iOS 18.
+→ version `0.2.0` → product **SpaceSdkLibrary**. Requires iOS 18.
 
 ```swift
 import SpaceSdk

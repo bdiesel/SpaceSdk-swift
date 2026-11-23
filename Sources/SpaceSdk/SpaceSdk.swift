@@ -2,49 +2,52 @@
 @_exported import KotlinCoroutineSupport
 import KotlinRuntime
 import KotlinRuntimeSupport
-import OrgJetbrainsKotlinxKotlinxCoroutinesCore
 @_implementationOnly import SharedBridge_SpaceSdk
 
-/// What an APOD entry shows. A plain enum, so Swift gets a native enum.
+/// What an Astronomy Picture of the Day entry shows.
 public typealias MediaType = ExportedKotlinPackages.com.example.spacesdk.MediaType
-/// A spaceflight news article from the Spaceflight News API.
+/// A spaceflight news article.
 public typealias NewsArticle = ExportedKotlinPackages.com.example.spacesdk.NewsArticle
-/// Outcome of a news request. Errors are values, never exceptions.
+/// Result of a news request.
 public typealias NewsResult = ExportedKotlinPackages.com.example.spacesdk.NewsResult
 public typealias NewsResult_SealedType = ExportedKotlinPackages.com.example.spacesdk.NewsResult_SealedType
-/// Shared UI-layer state holder for a news list. Starts loading immediately.
-/// Render [state]; call [refresh] for pull-to-refresh; call [close] when done.
-public typealias NewsStateHolder = ExportedKotlinPackages.com.example.spacesdk.NewsStateHolder
-/// Everything a news list screen needs to render.
-public typealias NewsUiState = ExportedKotlinPackages.com.example.spacesdk.NewsUiState
-public typealias NewsUiState_SealedType = ExportedKotlinPackages.com.example.spacesdk.NewsUiState_SealedType
-/// NASA's Astronomy Picture of the Day.
+/// Use cases for spaceflight news.
 /// 
-/// Text fields are plain text (the SDK strips the HTML the API returns).
-/// Dates are ISO-8601 strings (`2026-11-22`) so the type crosses into Swift
-/// without exporting a date library.
+/// Never throws (except cancellation); failures come back as [NewsResult.Failure].
+public typealias NewsUseCases = ExportedKotlinPackages.com.example.spacesdk.NewsUseCases
+/// NASA's Astronomy Picture of the Day. Text fields are plain text.
 public typealias PictureOfTheDay = ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay
-/// Outcome of a picture-of-the-day request. Errors are values, never exceptions.
-public typealias PictureOfTheDayResult = ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult
-public typealias PictureOfTheDayResult_SealedType = ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult_SealedType
-/// Shared UI-layer state holder for a picture-of-the-day screen (the KMP
-/// equivalent of a ViewModel). Starts loading today's picture immediately.
+/// Use cases for NASA's Astronomy Picture of the Day.
 /// 
-/// Unidirectional data flow: the native UI renders [state] and sends events
-/// back with [loadLatest] and [load]. Call [close] when the screen goes away.
-public typealias PictureOfTheDayStateHolder = ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayStateHolder
-/// Everything a picture-of-the-day screen needs to render.
-public typealias PictureOfTheDayUiState = ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState
-public typealias PictureOfTheDayUiState_SealedType = ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState_SealedType
-/// SDK entry point and composition root.
+/// ```
+/// when (val result = sdk.pictureOfTheDay.today()) {
+///     is PictureResult.Success -> show(result.picture)
+///     is PictureResult.Failure -> showError(result.error)
+/// }
+/// ```
 /// 
-/// Wires the OpenAPI-generated clients (internal, from :space-api) into the
-/// data, domain and UI-state layers by hand (constructor injection). Create one
-/// instance and share it for the app's lifetime: it owns the HTTP clients and
-/// caches. No API key is needed for either service.
+/// Results are cached for the lifetime of the [SpaceSdk]. Never throws
+/// (except cancellation); failures come back as [PictureResult.Failure].
+public typealias PictureOfTheDayUseCases = ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUseCases
+/// Result of a picture-of-the-day request.
+public typealias PictureResult = ExportedKotlinPackages.com.example.spacesdk.PictureResult
+public typealias PictureResult_SealedType = ExportedKotlinPackages.com.example.spacesdk.PictureResult_SealedType
+/// Why a request failed.
+public typealias SpaceError = ExportedKotlinPackages.com.example.spacesdk.SpaceError
+/// SpaceSdk: NASA's Astronomy Picture of the Day and spaceflight news.
+/// 
+/// ```
+/// val sdk = SpaceSdk()                         // one instance per app
+/// sdk.pictureOfTheDay.today()
+/// sdk.pictureOfTheDay.forDate(2014, 9, 18)
+/// sdk.news.latest(count = 20)
+/// ```
+/// 
+/// No API key is needed. Create one instance and share it: it owns the network
+/// clients and caches.
 public typealias SpaceSdk = ExportedKotlinPackages.com.example.spacesdk.SpaceSdk
 extension ExportedKotlinPackages.com.example.spacesdk {
-    /// What an APOD entry shows. A plain enum, so Swift gets a native enum.
+    /// What an Astronomy Picture of the Day entry shows.
     public enum MediaType: KotlinRuntimeSupport._KotlinBridgeable, Swift.CaseIterable, Swift.LosslessStringConvertible, Swift.RawRepresentable {
         case IMAGE
         case VIDEO
@@ -117,51 +120,86 @@ extension ExportedKotlinPackages.com.example.spacesdk {
             }
         }
     }
-    public enum NewsUiState_SealedType: KotlinRuntimeSupport.SealedType {
-        case error(ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Error_SealedType)
-        case loading(ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Loading_SealedType)
-        case success(ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Success_SealedType)
-        public var value: ExportedKotlinPackages.com.example.spacesdk.NewsUiState {
-            get {
-                switch self {
-                case let .error(type): type.value
-                case let .loading(type): type.value
-                case let .success(type): type.value
-                }
-            }
-        }
-    }
-    public enum PictureOfTheDayResult_SealedType: KotlinRuntimeSupport.SealedType {
-        case failure(ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.Failure_SealedType)
-        case notFound(ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.NotFound_SealedType)
-        case success(ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.Success_SealedType)
-        public var value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult {
+    public enum PictureResult_SealedType: KotlinRuntimeSupport.SealedType {
+        case failure(ExportedKotlinPackages.com.example.spacesdk.PictureResult.Failure_SealedType)
+        case success(ExportedKotlinPackages.com.example.spacesdk.PictureResult.Success_SealedType)
+        public var value: ExportedKotlinPackages.com.example.spacesdk.PictureResult {
             get {
                 switch self {
                 case let .failure(type): type.value
-                case let .notFound(type): type.value
                 case let .success(type): type.value
                 }
             }
         }
     }
-    public enum PictureOfTheDayUiState_SealedType: KotlinRuntimeSupport.SealedType {
-        case error(ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Error_SealedType)
-        case loading(ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Loading_SealedType)
-        case notFound(ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.NotFound_SealedType)
-        case success(ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Success_SealedType)
-        public var value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState {
+    /// Why a request failed.
+    public enum SpaceError: KotlinRuntimeSupport._KotlinBridgeable, Swift.CaseIterable, Swift.LosslessStringConvertible, Swift.RawRepresentable {
+        case NETWORK
+        case SERVER
+        case NOT_FOUND
+        case INVALID_DATE
+        public var description: Swift.String {
             get {
                 switch self {
-                case let .error(type): type.value
-                case let .loading(type): type.value
-                case let .notFound(type): type.value
-                case let .success(type): type.value
+                case .NETWORK: "NETWORK"
+                case .SERVER: "SERVER"
+                case .NOT_FOUND: "NOT_FOUND"
+                case .INVALID_DATE: "INVALID_DATE"
+                default: fatalError()
                 }
             }
         }
+        public var rawValue: Swift.Int32 {
+            get {
+                switch self {
+                case .NETWORK: 0
+                case .SERVER: 1
+                case .NOT_FOUND: 2
+                case .INVALID_DATE: 3
+                default: fatalError()
+                }
+            }
+        }
+        public init?(
+            _ description: Swift.String
+        ) {
+            switch description {
+            case "NETWORK": self = .NETWORK
+            case "SERVER": self = .SERVER
+            case "NOT_FOUND": self = .NOT_FOUND
+            case "INVALID_DATE": self = .INVALID_DATE
+            default: return nil
+            }
+        }
+        public init?(
+            rawValue: Swift.Int32
+        ) {
+            guard 0..<4 ~= rawValue else { return nil }
+            self = SpaceError.allCases[Int(rawValue)]
+        }
+        public init(
+            __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
+            options: KotlinRuntime.KotlinBaseConstructionOptions
+        ) {
+            switch com_example_spacesdk_SpaceError_ordinal(__externalRCRefUnsafe) {
+            case 0: self = .NETWORK
+            case 1: self = .SERVER
+            case 2: self = .NOT_FOUND
+            case 3: self = .INVALID_DATE
+            default: fatalError()
+            }
+        }
+        public func __externalRCRef() -> Swift.UnsafeMutableRawPointer {
+            return switch self {
+            case .NETWORK: com_example_spacesdk_SpaceError_NETWORK()
+            case .SERVER: com_example_spacesdk_SpaceError_SERVER()
+            case .NOT_FOUND: com_example_spacesdk_SpaceError_NOT_FOUND()
+            case .INVALID_DATE: com_example_spacesdk_SpaceError_INVALID_DATE()
+            default: fatalError()
+            }
+        }
     }
-    /// A spaceflight news article from the Spaceflight News API.
+    /// A spaceflight news article.
     public final class NewsArticle: KotlinRuntime.KotlinBase {
         public var id: Swift.Int32 {
             get {
@@ -173,6 +211,7 @@ extension ExportedKotlinPackages.com.example.spacesdk {
                 return com_example_spacesdk_NewsArticle_imageUrl_get(self.__externalRCRef())
             }
         }
+        /// Publisher, e.g. "NASA" or "Spaceflight Now".
         public var newsSite: Swift.String {
             get {
                 return com_example_spacesdk_NewsArticle_newsSite_get(self.__externalRCRef())
@@ -230,20 +269,20 @@ extension ExportedKotlinPackages.com.example.spacesdk {
             return ExportedKotlinPackages.com.example.spacesdk.NewsArticle.__createClassWrapper(externalRCRef: com_example_spacesdk_NewsArticle_copy__TypesOfArguments__Swift_Int32_Swift_String_Swift_String_Swift_String_Swift_Optional_Swift_String__Swift_String_Swift_String__(self.__externalRCRef(), id, title, summary, url, imageUrl ?? nil, newsSite, publishedAt))
         }
     }
-    /// Outcome of a news request. Errors are values, never exceptions.
+    /// Result of a news request.
     open class NewsResult: KotlinRuntime.KotlinBase {
         public final class Failure: ExportedKotlinPackages.com.example.spacesdk.NewsResult {
-            public var message: Swift.String {
+            public var error: ExportedKotlinPackages.com.example.spacesdk.SpaceError {
                 get {
-                    return com_example_spacesdk_NewsResult_Failure_message_get(self.__externalRCRef())
+                    return ExportedKotlinPackages.com.example.spacesdk.SpaceError(__externalRCRefUnsafe: com_example_spacesdk_NewsResult_Failure_error_get(self.__externalRCRef()), options: .asBestFittingWrapper)
                 }
             }
             public init(
-                message: Swift.String
+                error: ExportedKotlinPackages.com.example.spacesdk.SpaceError
             ) {
                 let __kt = com_example_spacesdk_NewsResult_Failure_init_allocate()
                 super.init(__externalRCRefUnsafe: __kt, options: .asBoundBridge);
-                { com_example_spacesdk_NewsResult_Failure_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_Swift_String__(__kt, message); return () }()
+                { com_example_spacesdk_NewsResult_Failure_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_ExportedKotlinPackages_com_example_spacesdk_SpaceError__(__kt, error.__externalRCRef()); return () }()
             }
             package override init(
                 __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
@@ -252,9 +291,9 @@ extension ExportedKotlinPackages.com.example.spacesdk {
                 super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
             }
             public func copy(
-                message: Swift.String
+                error: ExportedKotlinPackages.com.example.spacesdk.SpaceError
             ) -> ExportedKotlinPackages.com.example.spacesdk.NewsResult.Failure {
-                return ExportedKotlinPackages.com.example.spacesdk.NewsResult.Failure.__createClassWrapper(externalRCRef: com_example_spacesdk_NewsResult_Failure_copy__TypesOfArguments__Swift_String__(self.__externalRCRef(), message))
+                return ExportedKotlinPackages.com.example.spacesdk.NewsResult.Failure.__createClassWrapper(externalRCRef: com_example_spacesdk_NewsResult_Failure_copy__TypesOfArguments__ExportedKotlinPackages_com_example_spacesdk_SpaceError__(self.__externalRCRef(), error.__externalRCRef()))
             }
             public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.NewsResult_SealedType {
                 .failure(.init(self))
@@ -318,170 +357,56 @@ extension ExportedKotlinPackages.com.example.spacesdk {
             }
         }
     }
-    /// Shared UI-layer state holder for a news list. Starts loading immediately.
-    /// Render [state]; call [refresh] for pull-to-refresh; call [close] when done.
-    public final class NewsStateHolder: KotlinRuntime.KotlinBase {
-        public var currentState: ExportedKotlinPackages.com.example.spacesdk.NewsUiState {
-            get {
-                return ExportedKotlinPackages.com.example.spacesdk.NewsUiState.__createClassWrapper(externalRCRef: com_example_spacesdk_NewsStateHolder_currentState_get(self.__externalRCRef()))
-            }
-        }
-        public var state: any KotlinCoroutineSupport.KotlinTypedFlow<ExportedKotlinPackages.com.example.spacesdk.NewsUiState> {
-            get {
-                return KotlinCoroutineSupport._KotlinTypedFlowImpl<ExportedKotlinPackages.com.example.spacesdk.NewsUiState>.create(KotlinRuntime.KotlinBase.__createProtocolWrapper(externalRCRef: com_example_spacesdk_NewsStateHolder_state_get(self.__externalRCRef()), conformsTo: ExportedKotlinPackages.kotlinx.coroutines.flow.Flow.Type.self) as! any ExportedKotlinPackages.kotlinx.coroutines.flow.Flow, ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Type.self)
-            }
-        }
-        package override init(
-            __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
-            options: KotlinRuntime.KotlinBaseConstructionOptions
-        ) {
-            super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
-        }
-        public func close() -> Swift.Void {
-            return { com_example_spacesdk_NewsStateHolder_close(self.__externalRCRef()); return () }()
-        }
-        /// Event: fetch the latest articles, bypassing the cache.
-        public func refresh() -> Swift.Void {
-            return { com_example_spacesdk_NewsStateHolder_refresh(self.__externalRCRef()); return () }()
-        }
-    }
-    /// Everything a news list screen needs to render.
-    open class NewsUiState: KotlinRuntime.KotlinBase {
-        public final class Error: ExportedKotlinPackages.com.example.spacesdk.NewsUiState {
-            public var message: Swift.String {
-                get {
-                    return com_example_spacesdk_NewsUiState_Error_message_get(self.__externalRCRef())
-                }
-            }
-            public init(
-                message: Swift.String
-            ) {
-                let __kt = com_example_spacesdk_NewsUiState_Error_init_allocate()
-                super.init(__externalRCRefUnsafe: __kt, options: .asBoundBridge);
-                { com_example_spacesdk_NewsUiState_Error_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_Swift_String__(__kt, message); return () }()
-            }
-            package override init(
-                __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
-                options: KotlinRuntime.KotlinBaseConstructionOptions
-            ) {
-                super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
-            }
-            public func copy(
-                message: Swift.String
-            ) -> ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Error {
-                return ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Error.__createClassWrapper(externalRCRef: com_example_spacesdk_NewsUiState_Error_copy__TypesOfArguments__Swift_String__(self.__externalRCRef(), message))
-            }
-            public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.NewsUiState_SealedType {
-                .error(.init(self))
-            }
-        }
-        public final class Loading: ExportedKotlinPackages.com.example.spacesdk.NewsUiState {
-            public static var shared: ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Loading {
-                get {
-                    return ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Loading.__createClassWrapper(externalRCRef: com_example_spacesdk_NewsUiState_Loading_get())
-                }
-            }
-            private init() {
-                fatalError()
-            }
-            package override init(
-                __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
-                options: KotlinRuntime.KotlinBaseConstructionOptions
-            ) {
-                super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
-            }
-            public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.NewsUiState_SealedType {
-                .loading(.init(self))
-            }
-        }
-        public final class Success: ExportedKotlinPackages.com.example.spacesdk.NewsUiState {
-            public var articles: [ExportedKotlinPackages.com.example.spacesdk.NewsArticle] {
-                get {
-                    return com_example_spacesdk_NewsUiState_Success_articles_get(self.__externalRCRef()) as! Swift.Array<ExportedKotlinPackages.com.example.spacesdk.NewsArticle>
-                }
-            }
-            public init(
-                articles: [ExportedKotlinPackages.com.example.spacesdk.NewsArticle]
-            ) {
-                let __kt = com_example_spacesdk_NewsUiState_Success_init_allocate()
-                super.init(__externalRCRefUnsafe: __kt, options: .asBoundBridge);
-                { com_example_spacesdk_NewsUiState_Success_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_Swift_Array_ExportedKotlinPackages_com_example_spacesdk_NewsArticle___(__kt, articles); return () }()
-            }
-            package override init(
-                __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
-                options: KotlinRuntime.KotlinBaseConstructionOptions
-            ) {
-                super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
-            }
-            public func copy(
-                articles: [ExportedKotlinPackages.com.example.spacesdk.NewsArticle]
-            ) -> ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Success {
-                return ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Success.__createClassWrapper(externalRCRef: com_example_spacesdk_NewsUiState_Success_copy__TypesOfArguments__Swift_Array_ExportedKotlinPackages_com_example_spacesdk_NewsArticle___(self.__externalRCRef(), articles))
-            }
-            public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.NewsUiState_SealedType {
-                .success(.init(self))
-            }
-        }
-        public struct Error_SealedType: KotlinRuntimeSupport.SealedType {
-            public let value: ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Error
-            init(
-                _ value: ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Error
-            ) {
-                self.value = value
-            }
-        }
-        public struct Loading_SealedType: KotlinRuntimeSupport.SealedType {
-            public let value: ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Loading
-            init(
-                _ value: ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Loading
-            ) {
-                self.value = value
-            }
-        }
-        public struct Success_SealedType: KotlinRuntimeSupport.SealedType {
-            public let value: ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Success
-            init(
-                _ value: ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Success
-            ) {
-                self.value = value
-            }
-        }
-        package override init(
-            __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
-            options: KotlinRuntime.KotlinBaseConstructionOptions
-        ) {
-            super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
-        }
-        open func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.NewsUiState_SealedType {
-            switch self {
-            case let value as ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Error: .error(.init(value))
-            case let value as ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Loading: .loading(.init(value))
-            case let value as ExportedKotlinPackages.com.example.spacesdk.NewsUiState.Success: .success(.init(value))
-            default: fatalError("missing sealedType for \(self)")
-            }
-        }
-    }
-    /// NASA's Astronomy Picture of the Day.
+    /// Use cases for spaceflight news.
     /// 
-    /// Text fields are plain text (the SDK strips the HTML the API returns).
-    /// Dates are ISO-8601 strings (`2026-11-22`) so the type crosses into Swift
-    /// without exporting a date library.
+    /// Never throws (except cancellation); failures come back as [NewsResult.Failure].
+    public final class NewsUseCases: KotlinRuntime.KotlinBase {
+        package override init(
+            __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
+            options: KotlinRuntime.KotlinBaseConstructionOptions
+        ) {
+            super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
+        }
+        /// The [count] most recent articles (1–50). Uses cached articles when available.
+        public func latest(
+            count: Swift.Int32
+        ) async throws -> ExportedKotlinPackages.com.example.spacesdk.NewsResult {
+            return try await withKotlinContinuation { continuation, exception, cancellation in
+                let _: Bool = com_example_spacesdk_NewsUseCases_latest__TypesOfArguments__Swift_Int32__(self.__externalRCRef(), count, Unmanaged.passRetained((continuation as (ExportedKotlinPackages.com.example.spacesdk.NewsResult) -> Swift.Void) as AnyObject).toOpaque(), Unmanaged.passRetained((exception as (Swift.Optional<Swift.Error>) -> Swift.Void) as AnyObject).toOpaque(), cancellation.__externalRCRef())
+            }
+        }
+        /// Like [latest], but always fetches fresh articles (e.g. pull-to-refresh).
+        public func refresh(
+            count: Swift.Int32
+        ) async throws -> ExportedKotlinPackages.com.example.spacesdk.NewsResult {
+            return try await withKotlinContinuation { continuation, exception, cancellation in
+                let _: Bool = com_example_spacesdk_NewsUseCases_refresh__TypesOfArguments__Swift_Int32__(self.__externalRCRef(), count, Unmanaged.passRetained((continuation as (ExportedKotlinPackages.com.example.spacesdk.NewsResult) -> Swift.Void) as AnyObject).toOpaque(), Unmanaged.passRetained((exception as (Swift.Optional<Swift.Error>) -> Swift.Void) as AnyObject).toOpaque(), cancellation.__externalRCRef())
+            }
+        }
+    }
+    /// NASA's Astronomy Picture of the Day. Text fields are plain text.
     public final class PictureOfTheDay: KotlinRuntime.KotlinBase {
-        /// Accessibility description, may be empty.
+        /// Accessibility description; may be empty.
         public var altText: Swift.String {
             get {
                 return com_example_spacesdk_PictureOfTheDay_altText_get(self.__externalRCRef())
             }
         }
-        /// Image credit, may be empty.
+        /// Image credit; may be empty.
         public var credit: Swift.String {
             get {
                 return com_example_spacesdk_PictureOfTheDay_credit_get(self.__externalRCRef())
             }
         }
+        /// Publication date as `YYYY-MM-DD`.
         public var date: Swift.String {
             get {
                 return com_example_spacesdk_PictureOfTheDay_date_get(self.__externalRCRef())
+            }
+        }
+        public var day: Swift.Int32 {
+            get {
+                return com_example_spacesdk_PictureOfTheDay_day_get(self.__externalRCRef())
             }
         }
         public var explanation: Swift.String {
@@ -489,7 +414,7 @@ extension ExportedKotlinPackages.com.example.spacesdk {
                 return com_example_spacesdk_PictureOfTheDay_explanation_get(self.__externalRCRef())
             }
         }
-        /// Full-size image, or null when the entry has none.
+        /// Full-size image, or null when the entry has none (e.g. a video).
         public var imageUrl: Swift.String? {
             get {
                 return com_example_spacesdk_PictureOfTheDay_imageUrl_get(self.__externalRCRef())
@@ -500,7 +425,12 @@ extension ExportedKotlinPackages.com.example.spacesdk {
                 return ExportedKotlinPackages.com.example.spacesdk.MediaType(__externalRCRefUnsafe: com_example_spacesdk_PictureOfTheDay_mediaType_get(self.__externalRCRef()), options: .asBestFittingWrapper)
             }
         }
-        /// The APOD web page for this entry.
+        public var month: Swift.Int32 {
+            get {
+                return com_example_spacesdk_PictureOfTheDay_month_get(self.__externalRCRef())
+            }
+        }
+        /// The entry's page on nasa.gov.
         public var pageUrl: Swift.String {
             get {
                 return com_example_spacesdk_PictureOfTheDay_pageUrl_get(self.__externalRCRef())
@@ -511,6 +441,11 @@ extension ExportedKotlinPackages.com.example.spacesdk {
                 return com_example_spacesdk_PictureOfTheDay_title_get(self.__externalRCRef())
             }
         }
+        public var year: Swift.Int32 {
+            get {
+                return com_example_spacesdk_PictureOfTheDay_year_get(self.__externalRCRef())
+            }
+        }
         package override init(
             __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
             options: KotlinRuntime.KotlinBaseConstructionOptions
@@ -519,6 +454,9 @@ extension ExportedKotlinPackages.com.example.spacesdk {
         }
         public init(
             date: Swift.String,
+            year: Swift.Int32,
+            month: Swift.Int32,
+            day: Swift.Int32,
             title: Swift.String,
             explanation: Swift.String,
             mediaType: ExportedKotlinPackages.com.example.spacesdk.MediaType,
@@ -529,10 +467,13 @@ extension ExportedKotlinPackages.com.example.spacesdk {
         ) {
             let __kt = com_example_spacesdk_PictureOfTheDay_init_allocate()
             super.init(__externalRCRefUnsafe: __kt, options: .asBoundBridge);
-            { com_example_spacesdk_PictureOfTheDay_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_Swift_String_Swift_String_Swift_String_ExportedKotlinPackages_com_example_spacesdk_MediaType_Swift_Optional_Swift_String__Swift_String_Swift_String_Swift_String__(__kt, date, title, explanation, mediaType.__externalRCRef(), imageUrl ?? nil, pageUrl, credit, altText); return () }()
+            { com_example_spacesdk_PictureOfTheDay_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_Swift_String_Swift_Int32_Swift_Int32_Swift_Int32_Swift_String_Swift_String_ExportedKotlinPackages_com_example_spacesdk_MediaType_Swift_Optional_Swift_String__Swift_String_Swift_String_Swift_String__(__kt, date, year, month, day, title, explanation, mediaType.__externalRCRef(), imageUrl ?? nil, pageUrl, credit, altText); return () }()
         }
         public func copy(
             date: Swift.String,
+            year: Swift.Int32,
+            month: Swift.Int32,
+            day: Swift.Int32,
             title: Swift.String,
             explanation: Swift.String,
             mediaType: ExportedKotlinPackages.com.example.spacesdk.MediaType,
@@ -541,23 +482,58 @@ extension ExportedKotlinPackages.com.example.spacesdk {
             credit: Swift.String,
             altText: Swift.String
         ) -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay {
-            return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDay_copy__TypesOfArguments__Swift_String_Swift_String_Swift_String_ExportedKotlinPackages_com_example_spacesdk_MediaType_Swift_Optional_Swift_String__Swift_String_Swift_String_Swift_String__(self.__externalRCRef(), date, title, explanation, mediaType.__externalRCRef(), imageUrl ?? nil, pageUrl, credit, altText))
+            return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDay_copy__TypesOfArguments__Swift_String_Swift_Int32_Swift_Int32_Swift_Int32_Swift_String_Swift_String_ExportedKotlinPackages_com_example_spacesdk_MediaType_Swift_Optional_Swift_String__Swift_String_Swift_String_Swift_String__(self.__externalRCRef(), date, year, month, day, title, explanation, mediaType.__externalRCRef(), imageUrl ?? nil, pageUrl, credit, altText))
         }
     }
-    /// Outcome of a picture-of-the-day request. Errors are values, never exceptions.
-    open class PictureOfTheDayResult: KotlinRuntime.KotlinBase {
-        public final class Failure: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult {
-            public var message: Swift.String {
+    /// Use cases for NASA's Astronomy Picture of the Day.
+    /// 
+    /// ```
+    /// when (val result = sdk.pictureOfTheDay.today()) {
+    ///     is PictureResult.Success -> show(result.picture)
+    ///     is PictureResult.Failure -> showError(result.error)
+    /// }
+    /// ```
+    /// 
+    /// Results are cached for the lifetime of the [SpaceSdk]. Never throws
+    /// (except cancellation); failures come back as [PictureResult.Failure].
+    public final class PictureOfTheDayUseCases: KotlinRuntime.KotlinBase {
+        package override init(
+            __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
+            options: KotlinRuntime.KotlinBaseConstructionOptions
+        ) {
+            super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
+        }
+        /// The picture published on the given date (month 1–12, 1995-06-16 or later).
+        public func forDate(
+            year: Swift.Int32,
+            month: Swift.Int32,
+            day: Swift.Int32
+        ) async throws -> ExportedKotlinPackages.com.example.spacesdk.PictureResult {
+            return try await withKotlinContinuation { continuation, exception, cancellation in
+                let _: Bool = com_example_spacesdk_PictureOfTheDayUseCases_forDate__TypesOfArguments__Swift_Int32_Swift_Int32_Swift_Int32__(self.__externalRCRef(), year, month, day, Unmanaged.passRetained((continuation as (ExportedKotlinPackages.com.example.spacesdk.PictureResult) -> Swift.Void) as AnyObject).toOpaque(), Unmanaged.passRetained((exception as (Swift.Optional<Swift.Error>) -> Swift.Void) as AnyObject).toOpaque(), cancellation.__externalRCRef())
+            }
+        }
+        /// The most recent picture. Falls back to the last one loaded when offline.
+        public func today() async throws -> ExportedKotlinPackages.com.example.spacesdk.PictureResult {
+            return try await withKotlinContinuation { continuation, exception, cancellation in
+                let _: Bool = com_example_spacesdk_PictureOfTheDayUseCases_today(self.__externalRCRef(), Unmanaged.passRetained((continuation as (ExportedKotlinPackages.com.example.spacesdk.PictureResult) -> Swift.Void) as AnyObject).toOpaque(), Unmanaged.passRetained((exception as (Swift.Optional<Swift.Error>) -> Swift.Void) as AnyObject).toOpaque(), cancellation.__externalRCRef())
+            }
+        }
+    }
+    /// Result of a picture-of-the-day request.
+    open class PictureResult: KotlinRuntime.KotlinBase {
+        public final class Failure: ExportedKotlinPackages.com.example.spacesdk.PictureResult {
+            public var error: ExportedKotlinPackages.com.example.spacesdk.SpaceError {
                 get {
-                    return com_example_spacesdk_PictureOfTheDayResult_Failure_message_get(self.__externalRCRef())
+                    return ExportedKotlinPackages.com.example.spacesdk.SpaceError(__externalRCRefUnsafe: com_example_spacesdk_PictureResult_Failure_error_get(self.__externalRCRef()), options: .asBestFittingWrapper)
                 }
             }
             public init(
-                message: Swift.String
+                error: ExportedKotlinPackages.com.example.spacesdk.SpaceError
             ) {
-                let __kt = com_example_spacesdk_PictureOfTheDayResult_Failure_init_allocate()
+                let __kt = com_example_spacesdk_PictureResult_Failure_init_allocate()
                 super.init(__externalRCRefUnsafe: __kt, options: .asBoundBridge);
-                { com_example_spacesdk_PictureOfTheDayResult_Failure_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_Swift_String__(__kt, message); return () }()
+                { com_example_spacesdk_PictureResult_Failure_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_ExportedKotlinPackages_com_example_spacesdk_SpaceError__(__kt, error.__externalRCRef()); return () }()
             }
             package override init(
                 __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
@@ -566,54 +542,26 @@ extension ExportedKotlinPackages.com.example.spacesdk {
                 super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
             }
             public func copy(
-                message: Swift.String
-            ) -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.Failure {
-                return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.Failure.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDayResult_Failure_copy__TypesOfArguments__Swift_String__(self.__externalRCRef(), message))
+                error: ExportedKotlinPackages.com.example.spacesdk.SpaceError
+            ) -> ExportedKotlinPackages.com.example.spacesdk.PictureResult.Failure {
+                return ExportedKotlinPackages.com.example.spacesdk.PictureResult.Failure.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureResult_Failure_copy__TypesOfArguments__ExportedKotlinPackages_com_example_spacesdk_SpaceError__(self.__externalRCRef(), error.__externalRCRef()))
             }
-            public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult_SealedType {
+            public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.PictureResult_SealedType {
                 .failure(.init(self))
             }
         }
-        public final class NotFound: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult {
-            public var date: Swift.String {
-                get {
-                    return com_example_spacesdk_PictureOfTheDayResult_NotFound_date_get(self.__externalRCRef())
-                }
-            }
-            public init(
-                date: Swift.String
-            ) {
-                let __kt = com_example_spacesdk_PictureOfTheDayResult_NotFound_init_allocate()
-                super.init(__externalRCRefUnsafe: __kt, options: .asBoundBridge);
-                { com_example_spacesdk_PictureOfTheDayResult_NotFound_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_Swift_String__(__kt, date); return () }()
-            }
-            package override init(
-                __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
-                options: KotlinRuntime.KotlinBaseConstructionOptions
-            ) {
-                super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
-            }
-            public func copy(
-                date: Swift.String
-            ) -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.NotFound {
-                return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.NotFound.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDayResult_NotFound_copy__TypesOfArguments__Swift_String__(self.__externalRCRef(), date))
-            }
-            public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult_SealedType {
-                .notFound(.init(self))
-            }
-        }
-        public final class Success: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult {
+        public final class Success: ExportedKotlinPackages.com.example.spacesdk.PictureResult {
             public var picture: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay {
                 get {
-                    return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDayResult_Success_picture_get(self.__externalRCRef()))
+                    return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureResult_Success_picture_get(self.__externalRCRef()))
                 }
             }
             public init(
                 picture: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay
             ) {
-                let __kt = com_example_spacesdk_PictureOfTheDayResult_Success_init_allocate()
+                let __kt = com_example_spacesdk_PictureResult_Success_init_allocate()
                 super.init(__externalRCRefUnsafe: __kt, options: .asBoundBridge);
-                { com_example_spacesdk_PictureOfTheDayResult_Success_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_ExportedKotlinPackages_com_example_spacesdk_PictureOfTheDay__(__kt, picture.__externalRCRef()); return () }()
+                { com_example_spacesdk_PictureResult_Success_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_ExportedKotlinPackages_com_example_spacesdk_PictureOfTheDay__(__kt, picture.__externalRCRef()); return () }()
             }
             package override init(
                 __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
@@ -623,33 +571,25 @@ extension ExportedKotlinPackages.com.example.spacesdk {
             }
             public func copy(
                 picture: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay
-            ) -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.Success {
-                return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.Success.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDayResult_Success_copy__TypesOfArguments__ExportedKotlinPackages_com_example_spacesdk_PictureOfTheDay__(self.__externalRCRef(), picture.__externalRCRef()))
+            ) -> ExportedKotlinPackages.com.example.spacesdk.PictureResult.Success {
+                return ExportedKotlinPackages.com.example.spacesdk.PictureResult.Success.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureResult_Success_copy__TypesOfArguments__ExportedKotlinPackages_com_example_spacesdk_PictureOfTheDay__(self.__externalRCRef(), picture.__externalRCRef()))
             }
-            public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult_SealedType {
+            public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.PictureResult_SealedType {
                 .success(.init(self))
             }
         }
         public struct Failure_SealedType: KotlinRuntimeSupport.SealedType {
-            public let value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.Failure
+            public let value: ExportedKotlinPackages.com.example.spacesdk.PictureResult.Failure
             init(
-                _ value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.Failure
-            ) {
-                self.value = value
-            }
-        }
-        public struct NotFound_SealedType: KotlinRuntimeSupport.SealedType {
-            public let value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.NotFound
-            init(
-                _ value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.NotFound
+                _ value: ExportedKotlinPackages.com.example.spacesdk.PictureResult.Failure
             ) {
                 self.value = value
             }
         }
         public struct Success_SealedType: KotlinRuntimeSupport.SealedType {
-            public let value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.Success
+            public let value: ExportedKotlinPackages.com.example.spacesdk.PictureResult.Success
             init(
-                _ value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.Success
+                _ value: ExportedKotlinPackages.com.example.spacesdk.PictureResult.Success
             ) {
                 self.value = value
             }
@@ -660,214 +600,38 @@ extension ExportedKotlinPackages.com.example.spacesdk {
         ) {
             super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
         }
-        open func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult_SealedType {
+        open func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.PictureResult_SealedType {
             switch self {
-            case let value as ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.Failure: .failure(.init(value))
-            case let value as ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.NotFound: .notFound(.init(value))
-            case let value as ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.Success: .success(.init(value))
+            case let value as ExportedKotlinPackages.com.example.spacesdk.PictureResult.Failure: .failure(.init(value))
+            case let value as ExportedKotlinPackages.com.example.spacesdk.PictureResult.Success: .success(.init(value))
             default: fatalError("missing sealedType for \(self)")
             }
         }
     }
-    /// Shared UI-layer state holder for a picture-of-the-day screen (the KMP
-    /// equivalent of a ViewModel). Starts loading today's picture immediately.
+    /// SpaceSdk: NASA's Astronomy Picture of the Day and spaceflight news.
     /// 
-    /// Unidirectional data flow: the native UI renders [state] and sends events
-    /// back with [loadLatest] and [load]. Call [close] when the screen goes away.
-    public final class PictureOfTheDayStateHolder: KotlinRuntime.KotlinBase {
-        /// Current state, for UIs that need a synchronous first frame.
-        public var currentState: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState {
-            get {
-                return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDayStateHolder_currentState_get(self.__externalRCRef()))
-            }
-        }
-        /// Emits the current state, then every change.
-        public var state: any KotlinCoroutineSupport.KotlinTypedFlow<ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState> {
-            get {
-                return KotlinCoroutineSupport._KotlinTypedFlowImpl<ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState>.create(KotlinRuntime.KotlinBase.__createProtocolWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDayStateHolder_state_get(self.__externalRCRef()), conformsTo: ExportedKotlinPackages.kotlinx.coroutines.flow.Flow.Type.self) as! any ExportedKotlinPackages.kotlinx.coroutines.flow.Flow, ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Type.self)
-            }
-        }
-        package override init(
-            __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
-            options: KotlinRuntime.KotlinBaseConstructionOptions
-        ) {
-            super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
-        }
-        /// Cancels in-flight work. The holder can't be used afterwards.
-        public func close() -> Swift.Void {
-            return { com_example_spacesdk_PictureOfTheDayStateHolder_close(self.__externalRCRef()); return () }()
-        }
-        /// Event: show the picture for [date] (`YYYY-MM-DD`).
-        public func load(
-            date: Swift.String
-        ) -> Swift.Void {
-            return { com_example_spacesdk_PictureOfTheDayStateHolder_load__TypesOfArguments__Swift_String__(self.__externalRCRef(), date); return () }()
-        }
-        /// Event: show the most recent picture.
-        public func loadLatest() -> Swift.Void {
-            return { com_example_spacesdk_PictureOfTheDayStateHolder_loadLatest(self.__externalRCRef()); return () }()
-        }
-    }
-    /// Everything a picture-of-the-day screen needs to render.
-    open class PictureOfTheDayUiState: KotlinRuntime.KotlinBase {
-        public final class Error: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState {
-            public var message: Swift.String {
-                get {
-                    return com_example_spacesdk_PictureOfTheDayUiState_Error_message_get(self.__externalRCRef())
-                }
-            }
-            public init(
-                message: Swift.String
-            ) {
-                let __kt = com_example_spacesdk_PictureOfTheDayUiState_Error_init_allocate()
-                super.init(__externalRCRefUnsafe: __kt, options: .asBoundBridge);
-                { com_example_spacesdk_PictureOfTheDayUiState_Error_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_Swift_String__(__kt, message); return () }()
-            }
-            package override init(
-                __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
-                options: KotlinRuntime.KotlinBaseConstructionOptions
-            ) {
-                super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
-            }
-            public func copy(
-                message: Swift.String
-            ) -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Error {
-                return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Error.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDayUiState_Error_copy__TypesOfArguments__Swift_String__(self.__externalRCRef(), message))
-            }
-            public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState_SealedType {
-                .error(.init(self))
-            }
-        }
-        public final class Loading: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState {
-            public static var shared: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Loading {
-                get {
-                    return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Loading.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDayUiState_Loading_get())
-                }
-            }
-            private init() {
-                fatalError()
-            }
-            package override init(
-                __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
-                options: KotlinRuntime.KotlinBaseConstructionOptions
-            ) {
-                super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
-            }
-            public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState_SealedType {
-                .loading(.init(self))
-            }
-        }
-        public final class NotFound: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState {
-            public var date: Swift.String {
-                get {
-                    return com_example_spacesdk_PictureOfTheDayUiState_NotFound_date_get(self.__externalRCRef())
-                }
-            }
-            public init(
-                date: Swift.String
-            ) {
-                let __kt = com_example_spacesdk_PictureOfTheDayUiState_NotFound_init_allocate()
-                super.init(__externalRCRefUnsafe: __kt, options: .asBoundBridge);
-                { com_example_spacesdk_PictureOfTheDayUiState_NotFound_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_Swift_String__(__kt, date); return () }()
-            }
-            package override init(
-                __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
-                options: KotlinRuntime.KotlinBaseConstructionOptions
-            ) {
-                super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
-            }
-            public func copy(
-                date: Swift.String
-            ) -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.NotFound {
-                return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.NotFound.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDayUiState_NotFound_copy__TypesOfArguments__Swift_String__(self.__externalRCRef(), date))
-            }
-            public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState_SealedType {
-                .notFound(.init(self))
-            }
-        }
-        public final class Success: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState {
-            public var picture: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay {
-                get {
-                    return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDayUiState_Success_picture_get(self.__externalRCRef()))
-                }
-            }
-            public init(
-                picture: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay
-            ) {
-                let __kt = com_example_spacesdk_PictureOfTheDayUiState_Success_init_allocate()
-                super.init(__externalRCRefUnsafe: __kt, options: .asBoundBridge);
-                { com_example_spacesdk_PictureOfTheDayUiState_Success_init_initialize__TypesOfArguments__Swift_UnsafeMutableRawPointer_ExportedKotlinPackages_com_example_spacesdk_PictureOfTheDay__(__kt, picture.__externalRCRef()); return () }()
-            }
-            package override init(
-                __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
-                options: KotlinRuntime.KotlinBaseConstructionOptions
-            ) {
-                super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
-            }
-            public func copy(
-                picture: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDay
-            ) -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Success {
-                return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Success.__createClassWrapper(externalRCRef: com_example_spacesdk_PictureOfTheDayUiState_Success_copy__TypesOfArguments__ExportedKotlinPackages_com_example_spacesdk_PictureOfTheDay__(self.__externalRCRef(), picture.__externalRCRef()))
-            }
-            public override func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState_SealedType {
-                .success(.init(self))
-            }
-        }
-        public struct Error_SealedType: KotlinRuntimeSupport.SealedType {
-            public let value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Error
-            init(
-                _ value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Error
-            ) {
-                self.value = value
-            }
-        }
-        public struct Loading_SealedType: KotlinRuntimeSupport.SealedType {
-            public let value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Loading
-            init(
-                _ value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Loading
-            ) {
-                self.value = value
-            }
-        }
-        public struct NotFound_SealedType: KotlinRuntimeSupport.SealedType {
-            public let value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.NotFound
-            init(
-                _ value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.NotFound
-            ) {
-                self.value = value
-            }
-        }
-        public struct Success_SealedType: KotlinRuntimeSupport.SealedType {
-            public let value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Success
-            init(
-                _ value: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Success
-            ) {
-                self.value = value
-            }
-        }
-        package override init(
-            __externalRCRefUnsafe: Swift.UnsafeMutableRawPointer,
-            options: KotlinRuntime.KotlinBaseConstructionOptions
-        ) {
-            super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
-        }
-        open func sealedType() -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState_SealedType {
-            switch self {
-            case let value as ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Error: .error(.init(value))
-            case let value as ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Loading: .loading(.init(value))
-            case let value as ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.NotFound: .notFound(.init(value))
-            case let value as ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUiState.Success: .success(.init(value))
-            default: fatalError("missing sealedType for \(self)")
-            }
-        }
-    }
-    /// SDK entry point and composition root.
+    /// ```
+    /// val sdk = SpaceSdk()                         // one instance per app
+    /// sdk.pictureOfTheDay.today()
+    /// sdk.pictureOfTheDay.forDate(2014, 9, 18)
+    /// sdk.news.latest(count = 20)
+    /// ```
     /// 
-    /// Wires the OpenAPI-generated clients (internal, from :space-api) into the
-    /// data, domain and UI-state layers by hand (constructor injection). Create one
-    /// instance and share it for the app's lifetime: it owns the HTTP clients and
-    /// caches. No API key is needed for either service.
+    /// No API key is needed. Create one instance and share it: it owns the network
+    /// clients and caches.
     public final class SpaceSdk: KotlinRuntime.KotlinBase {
+        /// Spaceflight news.
+        public var news: ExportedKotlinPackages.com.example.spacesdk.NewsUseCases {
+            get {
+                return ExportedKotlinPackages.com.example.spacesdk.NewsUseCases.__createClassWrapper(externalRCRef: com_example_spacesdk_SpaceSdk_news_get(self.__externalRCRef()))
+            }
+        }
+        /// Astronomy Picture of the Day.
+        public var pictureOfTheDay: ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUseCases {
+            get {
+                return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayUseCases.__createClassWrapper(externalRCRef: com_example_spacesdk_SpaceSdk_pictureOfTheDay_get(self.__externalRCRef()))
+            }
+        }
         public override init() {
             let __kt = com_example_spacesdk_SpaceSdk_init_allocate()
             super.init(__externalRCRefUnsafe: __kt, options: .asBoundBridge);
@@ -879,38 +643,6 @@ extension ExportedKotlinPackages.com.example.spacesdk {
         ) {
             super.init(__externalRCRefUnsafe: __externalRCRefUnsafe, options: options);
         }
-        /// Creates a state holder for a news list showing [limit] articles.
-        public func createNews(
-            limit: Swift.Int32
-        ) -> ExportedKotlinPackages.com.example.spacesdk.NewsStateHolder {
-            return ExportedKotlinPackages.com.example.spacesdk.NewsStateHolder.__createClassWrapper(externalRCRef: com_example_spacesdk_SpaceSdk_createNews__TypesOfArguments__Swift_Int32__(self.__externalRCRef(), limit))
-        }
-        /// Creates a state holder for a picture-of-the-day screen.
-        public func createPictureOfTheDay() -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayStateHolder {
-            return ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayStateHolder.__createClassWrapper(externalRCRef: com_example_spacesdk_SpaceSdk_createPictureOfTheDay(self.__externalRCRef()))
-        }
-        /// The [limit] most recent spaceflight news articles (1–50). Never throws.
-        public func getLatestNews(
-            limit: Swift.Int32
-        ) async throws -> ExportedKotlinPackages.com.example.spacesdk.NewsResult {
-            return try await withKotlinContinuation { continuation, exception, cancellation in
-                let _: Bool = com_example_spacesdk_SpaceSdk_getLatestNews__TypesOfArguments__Swift_Int32__(self.__externalRCRef(), limit, Unmanaged.passRetained((continuation as (ExportedKotlinPackages.com.example.spacesdk.NewsResult) -> Swift.Void) as AnyObject).toOpaque(), Unmanaged.passRetained((exception as (Swift.Optional<Swift.Error>) -> Swift.Void) as AnyObject).toOpaque(), cancellation.__externalRCRef())
-            }
-        }
-        /// Today's (most recent) Astronomy Picture of the Day. Never throws.
-        public func getPictureOfTheDay() async throws -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult {
-            return try await withKotlinContinuation { continuation, exception, cancellation in
-                let _: Bool = com_example_spacesdk_SpaceSdk_getPictureOfTheDay(self.__externalRCRef(), Unmanaged.passRetained((continuation as (ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult) -> Swift.Void) as AnyObject).toOpaque(), Unmanaged.passRetained((exception as (Swift.Optional<Swift.Error>) -> Swift.Void) as AnyObject).toOpaque(), cancellation.__externalRCRef())
-            }
-        }
-        /// The picture for [date] (`YYYY-MM-DD`, 1995-06-16 or later). Never throws.
-        public func getPictureOfTheDay(
-            date: Swift.String
-        ) async throws -> ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult {
-            return try await withKotlinContinuation { continuation, exception, cancellation in
-                let _: Bool = com_example_spacesdk_SpaceSdk_getPictureOfTheDay__TypesOfArguments__Swift_String__(self.__externalRCRef(), date, Unmanaged.passRetained((continuation as (ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult) -> Swift.Void) as AnyObject).toOpaque(), Unmanaged.passRetained((exception as (Swift.Optional<Swift.Error>) -> Swift.Void) as AnyObject).toOpaque(), cancellation.__externalRCRef())
-            }
-        }
     }
 }
 @_cdecl("SpaceSdk_internal_functional_type_callee_SwiftU2EVoid__TypesOfArguments__Swift_UnsafeMutableRawPointer_ExportedKotlinPackages_com_example_spacesdk_NewsResult__")
@@ -919,9 +651,9 @@ package func SpaceSdk_internal_functional_type_callee_SwiftU2EVoid__TypesOfArgum
     return { _result; return true }()
 }
 
-@_cdecl("SpaceSdk_internal_functional_type_callee_SwiftU2EVoid__TypesOfArguments__Swift_UnsafeMutableRawPointer_ExportedKotlinPackages_com_example_spacesdk_PictureOfTheDayResult__")
-package func SpaceSdk_internal_functional_type_callee_SwiftU2EVoid__TypesOfArguments__Swift_UnsafeMutableRawPointer_ExportedKotlinPackages_com_example_spacesdk_PictureOfTheDayResult__(_ pointerToClosure: Swift.UnsafeMutableRawPointer, _ _1: Swift.UnsafeMutableRawPointer) -> Swift.Bool {
-    let _result: Swift.Void = (Unmanaged<AnyObject>.fromOpaque(pointerToClosure).takeUnretainedValue() as! (ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult) -> Swift.Void)(ExportedKotlinPackages.com.example.spacesdk.PictureOfTheDayResult.__createClassWrapper(externalRCRef: _1))
+@_cdecl("SpaceSdk_internal_functional_type_callee_SwiftU2EVoid__TypesOfArguments__Swift_UnsafeMutableRawPointer_ExportedKotlinPackages_com_example_spacesdk_PictureResult__")
+package func SpaceSdk_internal_functional_type_callee_SwiftU2EVoid__TypesOfArguments__Swift_UnsafeMutableRawPointer_ExportedKotlinPackages_com_example_spacesdk_PictureResult__(_ pointerToClosure: Swift.UnsafeMutableRawPointer, _ _1: Swift.UnsafeMutableRawPointer) -> Swift.Bool {
+    let _result: Swift.Void = (Unmanaged<AnyObject>.fromOpaque(pointerToClosure).takeUnretainedValue() as! (ExportedKotlinPackages.com.example.spacesdk.PictureResult) -> Swift.Void)(ExportedKotlinPackages.com.example.spacesdk.PictureResult.__createClassWrapper(externalRCRef: _1))
     return { _result; return true }()
 }
 

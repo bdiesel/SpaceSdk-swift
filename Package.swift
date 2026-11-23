@@ -9,14 +9,14 @@ let package = Package(
     products: [
         .library(
             name: "SpaceSdkLibrary",
-            targets: ["ExportedKotlinPackages", "KotlinRuntimeSupport", "KotlinCoroutineSupport", "SpaceSdk", "OrgJetbrainsKotlinxKotlinxCoroutinesCore"]
+            targets: ["ExportedKotlinPackages", "KotlinRuntimeSupport", "KotlinCoroutineSupport", "SpaceSdk"]
         )
     ],
     targets: [
         .binaryTarget(
             name: "SpaceSdkKotlin",
-            url: "https://github.com/bdiesel/SpaceSdk-swift/releases/download/0.1.0/SpaceSdkKotlin.xcframework.zip",
-            checksum: "e791e2406e121061af1602b560f295bb0a846ff3f9ec7b19035b04e32142c5f4"
+            url: "https://github.com/bdiesel/SpaceSdk-swift/releases/download/0.2.0/SpaceSdkKotlin.xcframework.zip",
+            checksum: "21fdfea742ec3eaee69835a2ecc0f9c4a7fba38aa792246f6030994d4e094914"
         ),
         .target(
             name: "ExportedKotlinPackages",
@@ -38,17 +38,10 @@ let package = Package(
         ),
         .target(
             name: "SpaceSdk",
-            dependencies: ["ExportedKotlinPackages", "KotlinCoroutineSupport", "KotlinRuntimeSupport", "OrgJetbrainsKotlinxKotlinxCoroutinesCore", "SharedBridge_SpaceSdk", "KotlinRuntime"]
+            dependencies: ["ExportedKotlinPackages", "KotlinCoroutineSupport", "KotlinRuntimeSupport", "SharedBridge_SpaceSdk", "KotlinRuntime"]
         ),
         .target(
             name: "SharedBridge_SpaceSdk"
-        ),
-        .target(
-            name: "OrgJetbrainsKotlinxKotlinxCoroutinesCore",
-            dependencies: ["ExportedKotlinPackages", "KotlinCoroutineSupport", "KotlinRuntimeSupport", "SharedBridge_OrgJetbrainsKotlinxKotlinxCoroutinesCore", "KotlinRuntime"]
-        ),
-        .target(
-            name: "SharedBridge_OrgJetbrainsKotlinxKotlinxCoroutinesCore"
         ),
         .target(
             name: "KotlinRuntime",
